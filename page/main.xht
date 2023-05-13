@@ -1,0 +1,56 @@
+<style>
+    :scope>select {
+        position: absolute;
+        right: 0;
+        z-index: 1;
+        min-width: 80px;
+        right: 10px;
+        top: 5px;
+    }
+</style>
+<select -src="f in flag_byname" -model="data.selected" @change="update()">
+    <option -value="f.key" -bind="f.name"></option>
+</select>
+<table -src="[fields,data.filtered]">
+</table>
+<script>
+    var fields = refilm`
+指令/opcode
+操作数/operands 20
+机器码/code
+`;
+    var setbytecode = function (o) {
+        var b = o.bytecode.slice();
+        var c = [];
+        var hex = a => a < 16 ? "0" + a.toString(16) : a.toString(16);
+        while (b.length) {
+            while (b[0] > 4) b.shift();
+            c.push(...b.splice(0, b.splice(0, 1)[0]).map(a => `0x${hex(a)}`));
+        }
+        o.code = c.join(', ');
+    };
+    var data = {
+        filtered: [],
+        selected: '386'
+    };
+    var update = function () {
+        try {
+            var insns = 狸猫.getInsns(data.selected);
+        } catch (e) {
+            alert(e);
+            throw e;
+        }
+        var f = [];
+        for (var k in insns) {
+            var a = insns[k];
+            for (var o of a) {
+                f.push(o);
+                setbytecode(o);
+            }
+        }
+        data.filtered = f;
+    };
+    var flag_byname = Object.keys(狸猫.flag_byname).map(k => ({ name: k, key: k }));
+    update();
+    console.log(data.filtered)
+</script>
