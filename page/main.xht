@@ -1,24 +1,34 @@
 <style>
-    :scope>select {
-        position: absolute;
-        right: 0;
-        z-index: 1;
-        min-width: 80px;
-        right: 10px;
-        top: 5px;
+
+    :scope>[header] {
+        input {
+            display: block;
+            width: 100%;
+        }
+
+        select {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
     }
 </style>
-<select -src="f in flag_byname" -model="data.selected" @change="update()">
-    <option -value="f.key" -bind="f.name"></option>
-</select>
-<table -src="[fields,data.filtered]">
+<div header>
+    <input -model="searchText" placeholder="${i18n`搜索`}"/>
+    <select -src="f in flag_byname" -model="data.selected" @change="update()">
+        <option -value="f.key" -bind="f.name"></option>
+    </select>
+</div>
+<table -src="[fields,data.filtered]" _find="searchText">
 </table>
 <script>
     var fields = refilm`
-指令/opcode
-操作数/operands 20
-机器码/code
+指令/opcode html
+操作数/operands 18
+掩码/codes 8
+机器码/code 6
 `;
+    var searchText = '';
     var setbytecode = function (o) {
         var b = o.bytecode.slice();
         var c = [];
@@ -31,7 +41,7 @@
     };
     var data = {
         filtered: [],
-        selected: '386'
+        selected: '8086'
     };
     var update = function () {
         try {
